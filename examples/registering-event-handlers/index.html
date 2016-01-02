@@ -25,8 +25,9 @@
         started = false,
         q1 = false, q2 = false, q3 = false, q4 = false;
         
-        document.onclick = function YTPlayerLoadById(e) {
-            var data = e.target.getAttribute('data-youtube-video-id'),
+        document.onclick = function YTPlayerLoadById(event) {
+            var event = event || window.event,
+                data = (event.target || event.srcElement).getAttribute('data-youtube-video-id'),
                 w = window.innerWidth
                 || document.documentElement.clientWidth
                 || document.body.clientWidth;
@@ -82,7 +83,7 @@
             else if(stateNames[event.data] === 'playing') { // Started playing
                 // startPlaybackProgress();
                 started = true;
-                player.getDuration().then(duration => {
+                player.getDuration().then(function(duration) {
                     startPlaybackProgress(duration);
                 })
             } 
@@ -99,7 +100,7 @@
                 var playerTimeDifference,
                     playerTimePercent;
 
-                player.getCurrentTime().then(currentTime => {
+                player.getCurrentTime().then(function(currentTime) {
                     playerTimeDifference = (currentTime / duration) * 100,
                     playerTimePercent = Math.floor(playerTimeDifference);
 
