@@ -1,51 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.4.1/es5-shim.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.4.1/es5-sham.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.0/es6-shim.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.0/es6-sham.min.js"></script>
     <script src='/youtube-player.js'></script>
 </head>
 <body>
     <div id='player-1'></div>
+    <div id="display"></div>
+    <button id='clickmeh'>Click meh</button>
+    <button id="clicksimp">Click simp</button>
 
     <script>
-    var YouTubePlayer = gajus.YouTubePlayer,
-        player1,
-        stateNames;
+    (function() {
+        var YouTubePlayer = gajus.YouTubePlayer,
+        player,
+        stateNames,
+        progressTimer,
+        playerTotalTime,
+        started = false,
+        q1 = false, q2 = false, q3 = false, q4 = false;
+        button = document.getElementById('clickmeh'),
+        simp = document.getElementById('clicksimp');
 
-    /**
-     * @see https://developers.google.com/youtube/iframe_api_reference#Events
-     */
-    stateNames = {
-        '-1': 'unstarted',
-        0: 'ended',
-        1: 'playing',
-        2: 'paused',
-        3: 'buffering',
-        5: 'video cued'
-    };
 
-    player1 = YouTubePlayer('player-1', {
-        videoId: 'M7lc1UVf-VE'
-    });
-
-    player1.on('ready', function () {
-        console.log('Player1 is ready.');
-    });
-
-    player1
-        // Play video is a Promise.
-        // "playVideo" is queued and will execute as soon as player is ready.
-        .playVideo()
-        .then(function () {
-            console.log('Starting to play player1. It will take some time to buffer video before it actually starts playing.');
-        });
-
-    player1.on('stateChange', function (event) {
-        if (!stateNames[event.data]) {
-            throw new Error('Unknown state (' + event.data + ').');
+        button.onclick = function() {
+            player.loadVideoById("EUHcNeg_e9g", 0, "large");
         }
 
-        console.log('State: ' + stateNames[event.data] + ' (' + event.data + ').');
-    });
+        simp.onclick = function() {
+            player.loadVideoById('XdAyvrFvEzs', 0, 'large');
+        }
+
+        /**
+         * @see https://developers.google.com/youtube/iframe_api_reference#Events
+         */
+        stateNames = {
+            '-1': 'unstarted',
+            0: 'ended',
+            1: 'playing',
+            2: 'paused',
+            3: 'buffering',
+            5: 'video cued'
+        };
+
+        player = YouTubePlayer('player-1', {
+            videoId: ''
+        });
+
+        player.on('ready', function () {
+            console.log('player is ready.');
+        });
+
+       /* player
+            // Play video is a Promise.
+            // "playVideo" is queued and will execute as soon as player is ready.
+            .playVideo()
+            .then(function () {
+                console.log('Starting to play player. It will take some time to buffer video before it actually starts playing.');
+            });*/
+
+        player.on('stateChange', function (event) {
+            if (!stateNames[event.data]) {
+                throw new Error('Unknown state (' + event.data + ').');
+            }
+
+            if (stateNames[event.data] === 'unstarted' || stateNames[event.data] === 'ended') {
+                clearInterval(progressTimer);
+                started = q1 = q2 = q3 = q4 = false;
+            }
+            
+            else if(stateNames[event.data] === 'playing') { // Started playing
+                // startPlaybackProgress();
+                started = true;
+                player.getDuration().then(duration => {
+                    startPlaybackProgress(duration);
+                })
+            } 
+
+            else {
+                clearInterval(progressTimer);
+                q1 = q2 = q3 = q4 = false;
+            }
+            console.log('State: ' + stateNames[event.data] + ' (' + event.data + ').');
+        });
+
+        function startPlaybackProgress(duration) {
+            progressTimer = setInterval(function (){
+                var playerTimeDifference,
+                    playerTimePercent;
+
+                player.getCurrentTime().then(currentTime => {
+                    playerTimeDifference = (currentTime / duration) * 100,
+                    playerTimePercent = Math.floor(playerTimeDifference);
+
+                    switch(true) {
+                      case (!q1 && playerTimePercent >= 25 && playerTimePercent < 50):
+                        q1 = true;
+                        console.log(playerTimePercent);
+                        break;
+                      case (!q2 && playerTimePercent >= 50 && playerTimePercent < 75):
+                        q2 = true;
+                        console.log(playerTimePercent);
+                        break;
+                      case (!q3 && playerTimePercent >= 75 && playerTimePercent < 99):
+                        q3 = true;
+                        console.log(playerTimePercent);
+                        break;
+                      case (!q4 && playerTimePercent >= 99):
+                        q4 = true;
+                        console.log(playerTimePercent);
+                        break;
+                      default:
+                        break;
+                    };
+                });
+            }, 100);
+        }
+    })();
     </script>
 </body>
 </html>
