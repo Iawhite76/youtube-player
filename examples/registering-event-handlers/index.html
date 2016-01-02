@@ -27,16 +27,18 @@
         
         document.onclick = function YTPlayerLoadById(event) {
             var event = event || window.event,
-                data = (event.target || event.srcElement).getAttribute('data-youtube-video-id'),
+                youtubeVideoId = (event.target || event.srcElement)
+                    .getAttribute('youtubeVideoId-youtube-video-id'),
                 w = window.innerWidth
-                || document.documentElement.clientWidth
-                || document.body.clientWidth;
-            if (data) {
+                    || document.documentElement.clientWidth
+                    || document.body.clientWidth;
+
+            if (youtubeVideoId) {
                 if (w <= 768) {
-                    player.cueVideoById(data, 0, 'large');
+                    player.cueVideoById(youtubeVideoId, 0, 'large');
                 }
                 else {
-                    player.loadVideoById(data, 0, "large");
+                    player.loadVideoById(youtubeVideoId, 0, "large");
                 }
             }
         }
