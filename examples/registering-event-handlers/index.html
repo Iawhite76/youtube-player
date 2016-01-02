@@ -28,7 +28,7 @@
         document.onclick = function YTPlayerLoadById(event) {
             var event = event || window.event,
                 youtubeVideoId = (event.target || event.srcElement)
-                    .getAttribute('youtubeVideoId-youtube-video-id'),
+                    .getAttribute('data-youtube-video-id'),
                 w = window.innerWidth
                     || document.documentElement.clientWidth
                     || document.body.clientWidth;
