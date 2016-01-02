@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.4.1/es5-shim.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.4.1/es5-sham.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.0/es6-shim.min.js"></script>
@@ -10,8 +12,8 @@
 <body>
     <div id='player-1'></div>
     <div id="display"></div>
-    <button id='clickmeh'>Click meh</button>
-    <button id="clicksimp">Click simp</button>
+    <button data-youtube-video-id="EUHcNeg_e9g">Click meh</button>
+    <button data-youtube-video-id="XdAyvrFvEzs">Click simp</button>
 
     <script>
     (function() {
@@ -22,17 +24,22 @@
         playerTotalTime,
         started = false,
         q1 = false, q2 = false, q3 = false, q4 = false;
-        button = document.getElementById('clickmeh'),
-        simp = document.getElementById('clicksimp');
-
-
-        button.onclick = function() {
-            player.loadVideoById("EUHcNeg_e9g", 0, "large");
+        
+        document.onclick = function YTPlayerLoadById(e) {
+            var data = e.target.getAttribute('data-youtube-video-id'),
+                w = window.innerWidth
+                || document.documentElement.clientWidth
+                || document.body.clientWidth;
+            if (data) {
+                if (w <= 768) {
+                    player.cueVideoById(data, 0, 'large');
+                }
+                else {
+                    player.loadVideoById(data, 0, "large");
+                }
+            }
         }
 
-        simp.onclick = function() {
-            player.loadVideoById('XdAyvrFvEzs', 0, 'large');
-        }
 
         /**
          * @see https://developers.google.com/youtube/iframe_api_reference#Events
